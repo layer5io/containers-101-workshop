@@ -23,7 +23,7 @@ Note: If you have just completed a previous part of the workshop, please close t
 
 1. In the PWD interface click `+ Add new instance` to instantiate a linux node
 
-  > Note: If you've closed the PWD interface, simply go back to [the PWD site](https://dockercon.play-with-docker.com)
+  > Note: If you've closed the PWD interface, simply go back to [the PWD site](https://hybrid.play-with-docker.com/)
 
 2. Repeat step 1 to add a second node to the cluster.
 
