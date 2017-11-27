@@ -18,6 +18,11 @@ In this lab we'll take a look at some basic Docker commands and a simple build-s
 
 Before we start, you'll need to gain access to your Linux VM, clone a GitHub repo, and make sure you have a DockerID.
 
+### Make sure you have a DockerID
+
+If you do not have a DockerID (a free login used to access Docker Cloud, Docker Store, and Docker Hub), please visit [Docker Cloud](https://cloud.docker.com) to register for one.
+
+
 ### Access your Linux VM
 1. Visit [Play With Docker](https://hybrid.play-with-docker.com)
 2. Click `Start Session`
@@ -30,17 +35,13 @@ All of the exercises in this lab will be performed in the console window on the 
 Use the following command to clone the lab repo from GitHub.
 
 ```
-$ git clone https://github.com/dockersamples/linux_tweet_app
-Cloning into 'linux_tweet_app'...
+$ git clone https://github.com/leecalcote/containers-101.git
+Cloning into 'containers-101'...
 remote: Counting objects: 14, done.
 remote: Compressing objects: 100% (9/9), done.
 remote: Total 14 (delta 5), reused 14 (delta 5), pack-reused 0
 Unpacking objects: 100% (14/14), done.
 ```
-
-### Make sure you have a DockerID
-
-If you do not have a DockerID (a free login used to access Docker Cloud, Docker Store, and Docker Hub), please visit [Docker Cloud](https://cloud.docker.com) to register for one.
 
 ## <a name="Task_1"></a>Task 1: Run some simple Docker containers
 
@@ -262,7 +263,7 @@ Let's have a look at the  Dockerfile we'll be using, which builds a simple websi
 1. Make sure you're in the `linux_tweet_app` directory:
 
     ```
-    $ cd ~/linux_tweet_app
+    $ cd ~/containers-101/linux_tweet_app
     ```
 
 2. Display the contents of our Dockerfile.
@@ -405,7 +406,7 @@ Because we did a bind mount, any changes made to the local filesystem are immedi
 
 3. Copy a new `index.html` into the container.
 
-    The Git repo that you pulled earlier contains several different versions of an index.html file. Run an `ls` command from within the `~/linux_tweet_app` directory to see a list of them. In this step we'll replace `index.html` with `index-new.html`.
+    The Git repo that you pulled earlier contains several different versions of an index.html file. Run an `ls` command from within the `~/containers-101/linux_tweet_app` directory to see a list of them. In this step we'll replace `index.html` with `index-new.html`.
 
     ```
     $ cp index-new.html index.html
