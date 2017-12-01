@@ -1,45 +1,138 @@
 <html>
     <head>
         <style>
+            @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,700|Roboto:400,700');
 
-        body {
-        	background-image: linear-gradient(-74deg, transparent 90%, rgba(255, 255, 255, 0.23) 20%),
-                              linear-gradient(-74deg, transparent 83%, rgba(255, 255, 255, 0.18) 15%),
-                              linear-gradient(-74deg, transparent 76%, rgba(255, 255, 255, 0.1) 15%),
-                              linear-gradient(to top, #f25a02, #f26818, #f97e36);
-    		background-size: cover;
-    		margin-bottom: 0px!important;
-        }
+            body {
+                background-image: linear-gradient(-74deg, transparent 90%, rgba(255, 255, 255, 0.23) 20%),
+                                linear-gradient(-74deg, transparent 83%, rgba(255, 255, 255, 0.18) 15%),
+                                linear-gradient(-74deg, transparent 76%, rgba(255, 255, 255, 0.1) 15%),
+                                linear-gradient(to top, #f25a02, #f26818, #f97e36);
+                background-size: cover;
+                font-family: 'Open Sans', sans-serif;
+                font-weight: normal;
+                font-size: 16px;
+                line-height: 1.5em;
+                padding: 0;
+                margin: 0;
+            }
 
-        div{
-            font-family: 'Geomanist', sans-serif;
-  			font-weight: normal;
-  			color: white;
-            width: 50%;
-            margin: 0 auto;
-            position: relative;
-            top: 50%;
-            transform: translateY(-50%);
+            h1, h2, h3, h4, h5, h6 {
+                font-family: 'Roboto', sans-serif;
+            }
 
-        }
+            .navbar {
+                position: absolute;
+                width: 100%;
+                margin-top: 20px;
+                background: rgba(255,255,255, 0.9);
+                box-shadow: 0 5px 25px 2px rgba(243,90,17, 0.3);
+            }
+
+            .navbar__container {
+                position: relative;
+                margin-left: 30px;
+                flex: 1 0 auto;
+                display: flex;
+                align-items: center;
+            }
+
+            .navbar__logo {
+                width: 200px;
+            }
+
+            .navbar__tagline {
+                position: absolute;
+                bottom: 12px;
+                left: 17px;
+                text-transform: uppercase;
+                font-family: 'Roboto', sans-serif;
+            }
+
+            .inner {
+                color: white;
+                max-width: 50%;
+                margin: 0 auto;
+                min-height: 100vh;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+            }
+
+            .inner__header {
+                font-size: 3.5em;
+                line-height: 1.5em;
+                margin-bottom: 1em;
+            }
+
+            .inner__title {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .inner__title img {
+                margin-right: 18px;
+            }
+
+            .inner__image img {
+                max-width: 200px;
+            }
+
+            .inner__tweet p {
+                margin-bottom: 2em;
+            }
+
+            .twitter-hashtag-button {
+                transition: background 0.5s ease-in-out;
+                line-height: 1em;
+                padding: 12px 24px;
+                margin-top: 1em;
+                background: #FF9D35;
+                color: #FFF;
+                font-weight: 700;
+                text-transform: uppercase;
+                text-decoration: none;
+            }
+
+            .twitter-hashtag-button:hover {
+                background: #FAB024;
+            }
         </style>
     </head>
 
     <body>
 
-       <img src=https://www.docker.com/sites/all/themes/docker/assets/images/brand-full.svg width=20%></img>
-
-       <div class="inner">
-            <center><h1>Docker 101!</h1></center>
-
-            <center><img src="./linux.png"></img><P>
-                
-            You've successfully deployed the SolarWinds Innovate Day - Tech Summit 2018 tweet app! Why not let the world know?
-
-                <p>
-
-                <a href="https://twitter.com/intent/tweet?button_hashtag=#SolarWindsInnovate" class="twitter-hashtag-button" data-size="large" data-text="I'm learning how to deploy Linux applications to a multi-os #Docker Swarm." data-url="http://innovate.solarwinds.io" data-lang="en" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+        <div class="navbar">
+            <div class="navbar__container">
+                <div class="navbar__logo">
+                    <img src="swlogo.svg" />
+                    <div class="navbar__tagline">Innovate Openly</div>
+                </div>
             </div>
+        </div>
+
+        <section class="inner">
+            <div class="inner__container">
+                <header class="inner__header">
+                    <h1 class="inner__title"><img src=https://www.docker.com/sites/all/themes/docker/assets/images/brand-full.svg width=50% /> 101!</h1>
+                    <div class="inner__image">
+                        <img src="linux.svg" alt="Linux Penguin" />
+                    </div>
+                    </header>
+                <div class="inner__tweet">
+                    <p>You've successfully deployed the SolarWinds Innovate Day - Tech Summit 2018 tweet app!<br />
+                        Why not let the world know?</p>
+                    <a href="https://twitter.com/intent/tweet?button_hashtag=#SolarWindsInnovate" class="twitter-hashtag-button" data-size="large"
+                        data-text="I'm learning how to deploy Linux applications to a multi-os #Docker Swarm." data-url="http://innovate.solarwinds.io"
+                        data-lang="en" data-show-count="false">Tweet</a>
+                    <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+                </div>
+            </div>
+        </section>
+
     </body>
 
 </html>

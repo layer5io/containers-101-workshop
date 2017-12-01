@@ -13,18 +13,40 @@
                 font-weight: normal;
                 font-size: 16px;
                 line-height: 1.5em;
-                margin-bottom: 0px!important;
+                padding: 0;
+                margin: 0;
             }
 
             h1, h2, h3, h4, h5, h6 {
                 font-family: 'Roboto', sans-serif;
             }
 
-            .logo {
+            .navbar {
                 position: absolute;
-                top: 0;
-                left: 0;
+                width: 100%;
+                margin-top: 20px;
+                background: rgba(255,255,255, 0.9);
+                box-shadow: 0 5px 25px 2px rgba(32,150,220, 0.3);
+            }
+
+            .navbar__container {
+                position: relative;
+                margin-left: 30px;
+                flex: 1 0 auto;
+                display: flex;
+                align-items: center;
+            }
+
+            .navbar__logo {
                 width: 200px;
+            }
+
+            .navbar__tagline {
+                position: absolute;
+                bottom: 12px;
+                left: 17px;
+                text-transform: uppercase;
+                font-family: 'Roboto', sans-serif;
             }
 
             .inner {
@@ -42,6 +64,7 @@
             .inner__header {
                 font-size: 3.5em;
                 line-height: 1.5em;
+                margin-bottom: 1em;
             }
 
             .inner__image img {
@@ -74,24 +97,31 @@
     </head>
 
     <body>
-        <div class="logo">
-            <img src="swlogo.svg"></img>
+        <div class="navbar">
+            <div class="navbar__container">
+                <div class="navbar__logo">
+                    <img src="swlogo.svg"></img>
+                    <div class="navbar__tagline">Innovate Openly</div>
+                </div>
+            </div>
         </div>
 
         <section class="inner">
-            <header class="inner__header">
-                <h1>Containers 101!</h1>
-                <div class="inner__image">
-                    <img src="linux.svg" alt="Linux Penguin" />
+            <div class="inner__container">
+                <header class="inner__header">
+                    <h1>Containers 101!</h1>
+                    <div class="inner__image">
+                        <img src="linux.svg" alt="Linux Penguin" />
+                    </div>
+                    </header>
+                <div class="inner__tweet">
+                    <p>You've successfully deployed the SolarWinds Innovate Day - Tech Summit 2018 tweet app!<br />
+                        Why not let the world know?</p>
+                    <a href="https://twitter.com/intent/tweet?button_hashtag=#SolarWindsInnovate" class="twitter-hashtag-button" data-size="large"
+                        data-text="I'm learning how to deploy Linux applications to a multi-os #Docker Swarm." data-url="http://innovate.solarwinds.io"
+                        data-lang="en" data-show-count="false">Tweet</a>
+                    <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
                 </div>
-                </header>
-            <div class="inner__tweet">
-                <p>You've successfully deployed the SolarWinds Innovate Day - Tech Summit 2018 tweet app!<br />
-                    Why not let the world know?</p>
-                <a href="https://twitter.com/intent/tweet?button_hashtag=#SolarWindsInnovate" class="twitter-hashtag-button" data-size="large"
-                    data-text="I'm learning how to deploy Linux applications to a multi-os #Docker Swarm." data-url="http://innovate.solarwinds.io"
-                    data-lang="en" data-show-count="false">Tweet</a>
-                <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
             </div>
         </section>
     </body>
