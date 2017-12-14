@@ -118,7 +118,7 @@ Let's start by looking at layers and how files written to a container are manage
     $ cd $(docker inspect -f {{.GraphDriver.Data.UpperDir}} debian)
     
     $ ls
-    root       test-file
+    test-file
     ```
 
     `MergedDir` is going to give us a look at the root filesystem of our container which is a combination of `UpperDir` and `LowerDir`:
@@ -146,7 +146,7 @@ Let's start by looking at layers and how files written to a container are manage
     $ touch test-file2
 
     $ ls
-    root        test-file   test-file2
+    test-file   test-file2
     ```
 
 
@@ -181,7 +181,7 @@ Let's start by looking at layers and how files written to a container are manage
 
     ```
     $ ls
-    root        test-file   test-file2
+    test-file   test-file2
     ```
 
     Because the container still exists, the files are still available on  your file system. At this point you could `docker start` your container and it would be just as it was before you exited. 

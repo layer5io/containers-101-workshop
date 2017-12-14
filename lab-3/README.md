@@ -27,9 +27,9 @@ Note: If you have just completed a previous part of the workshop, please close t
 
 2. Repeat step 1 to add a second node to the cluster.
 
-3. Click the `Windows containers` slider and then click `+ Add New Instance`
+3. Click the  `+ Add New Instance`
 
-  There are now three standalone Docker hosts: 2 linux and 1 Windows. 
+  There are now three standalone Docker hosts. 
 
 4. In the console for `node1` initialize Docker Swarm
 
@@ -55,10 +55,10 @@ Note: If you have just completed a previous part of the workshop, please close t
     This node joined a swarm as a worker.
     ```
 
-7. Switch to the Windows node and paste the same command at the Powershell prompt
+7. Switch to the third node and paste the same command at the Powershell prompt
 
     ```
-    PS C:\> docker swarm join --token SWMTKN-1-53ao1ihu684vpcpjuf332bi4et27qiwxajefyqryyj4o0indm7-b2zc5ldudkxcmf6kcncft8t12 192.168.0
+    $ docker swarm join --token SWMTKN-1-53ao1ihu684vpcpjuf332bi4et27qiwxajefyqryyj4o0indm7-b2zc5ldudkxcmf6kcncft8t12 192.168.0
     .13:2377
     This node joined a swarm as a worker.
     ```
@@ -77,7 +77,7 @@ Note: If you have just completed a previous part of the workshop, please close t
     xflngp99u1r9pn7bryqbbrrvq     win000046           Ready               Active
     ```
 
-    Commands against the swarm can only be issued from the manager node. Attempting to run the above command against `node2` or the Windows node would result in an error. 
+    Commands against the swarm can only be issued from the manager node. Attempting to run the above command against `node2` or `node3` would result in an error. 
 
     ```
     $ docker node ls
@@ -344,16 +344,15 @@ This next section covers building an overlay network and having two containers c
     ```
     Networking also works betwen Linux and Windows nodes
 
-9. Move to the Windows node
+9. Move to the `node3`
 
-10. Ping `alpine_host` from the Windows node
+10. Ping `alpine_host` from the `node3`
 
     ```
-    PS C:\> docker container run `
-    --network myoverlay `
-    --name windows_client `
-    --rm `
-    microsoft/windowsservercore powershell ping alpine_host
+    docker container run \
+      --rm \
+      --network myoverlay \
+      alpine ping alpine_host
 
     Pinging alpine_host [10.0.0.2] with 32 bytes of data:
     Reply from 10.0.0.2: bytes=32 time<1ms TTL=64
@@ -362,7 +361,7 @@ This next section covers building an overlay network and having two containers c
     Reply from 10.0.0.2: bytes=32 time<1ms TTL=64
     ```
 
-    > Note: In some cases it may take a few seconds for the Windows client to find the alpine host resutling in PING timeouts. If this happens, simply retry the above command.
+    > Note: In some cases it may take a few seconds for the client to find the alpine host resutling in PING timeouts. If this happens, simply retry the above command.
 
 ## Deploying Swarm services
 
@@ -384,7 +383,7 @@ This workshop cannot possibly cover all these topics, but will address several k
 
 This lab will deploy a two service application.  The application features a Java-based web front end running on Linux, and a Microsoft SQL server running on Windows. 
 
-### Deploying a Multi-OS Application with Docker Swarm
+### Deploying an Application with Docker Swarm
 
 1. Move to `node1`
 
@@ -402,9 +401,9 @@ This lab will deploy a two service application.  The application features a Java
       --name database \
       --endpoint-mode dnsrr \
       --network atsea \
-      --publish mode=host,target=1433 \
+      --publish mode=host,target=6379 \
       --detach=true \
-    sixeyed/atsea-db:mssql
+    redis
     ywlkfxw2oim67fuf9tue7ndyi
     ```
     The service is created with the following parameters:
@@ -412,7 +411,7 @@ This lab will deploy a two service application.  The application features a Java
     * `--name`: Gives the service an easily remembered name
     * `--endpoint-mode`: Today all services running on Windows need to be started in DNS round robin mode.
     * `--network`: Attaches the containers from our service to the `atsea` network
-    * `--publish`: Exposes port 1433 but only on the Windows host. 
+    * `--publish`: Exposes port 6379 but only on the host. 
     * `--detach`: Runs the service in the background
     * Our service is based off the image `sixeyed/atsea-db:mssql`
 
@@ -421,20 +420,64 @@ This lab will deploy a two service application.  The application features a Java
     ```
     $ docker service ps database
     ID                  NAME                IMAGE                          NODE                DESIRED STATE       CURRENT STATE      ERROR               PORTS
-    rgwtocu21j0f        database.1          sixeyed/atsea-db:mssql   win00003R           Running             Running 3 minutesago
+    rgwtocu21j0f        database.1          redis:latest                   node3           Running             Running 3 minutes ago
     ```
 
     > Note: Keep checking the status of the service until the `CURRENT STATE` is running. This usually takes 2-3 minutes
 
 5. Start the web front-end service
 
+    Create a python file 'app.py':
+
+    ```
+    from flask import Flask
+    from redis import Redis
+
+    app = Flask(__name__)
+    redis = Redis(host='database', port=6379)
+
+    @app.route('/')
+    def hello():
+        count = redis.incr('hits')
+        return 'Hello World! I have been seen {} times.\n'.format(count)
+
+    if __name__ == "__main__":
+        app.run(host="0.0.0.0", port=8000, debug=True)
+    ```
+
+    Create another file 'requirements.txt':
+    ```
+    flask
+    redis
+
+    ```
+
+
+
+    Create a Dockerfile with this content:
+    ```
+    FROM python:3.4-alpine
+    ADD . /code
+    WORKDIR /code
+    RUN pip install -r requirements.txt
+    CMD ["python", "app.py"]
+
+    ```
+
+    Build the docker image:
+
+    ```
+    docker build -t app:1.0 .
+    ```
+
+
     ```
     $ docker service create \
-    --publish 8080:8080 \
+    --publish 8000:8000 \
     --network atsea \
     --name appserver \
     --detach=true \
-    mikegcoleman/atsea_appserver:1.0
+    app:1.0
     tqvr2cxk31tr0ryel5ey4zmwr
     ```
 
@@ -443,9 +486,9 @@ This lab will deploy a two service application.  The application features a Java
     ```
     $ docker service ls
     ID                  NAME                MODE                REPLICAS            IMAGE                               PORTS
-    tqvr2cxk31tr        appserver           replicated          1/1                 dockersamples/atsea-appserver:1.0   *:8080->8080/
+    tqvr2cxk31tr        appserver           replicated          1/1                 app:1.0           *:8000->8000/
     tcp
-    xkm68h7z3wsu        database            replicated          1/1                 sixeyed/atsea-db:mssql
+    xkm68h7z3wsu        database            replicated          1/1                 redis:latest
     ```
 
 7. Make sure both services are up and running (check the `Current State`)
@@ -454,21 +497,18 @@ This lab will deploy a two service application.  The application features a Java
     $ docker service ps $(docker service ls -q)
     ID                  NAME                IMAGE                               NODE                DESIRED STATE       CURRENT STATE
                 ERROR               PORTS
-    jhetafd6jd7u        database.1          sixeyed/atsea-db:mssql              win00003R           Running             Running 3 min
+    jhetafd6jd7u        database.1          redis:latest                node2              Running             Running 3 min
     utes ago                        *:64024->1433/tcp
-    2cah7mw5a5c7        appserver.1         dockersamples/atsea-appserver:1.0   node1               Running             Running 6 min
+    2cah7mw5a5c7        appserver.1         app:1.0                         node1               Running             Running 6 min
     utes ago
     ```
 
-8. Visit the running website by clicking the `8080` at the top of the PWD screen.
+8. Visit the running website by clicking the `8000` at the top of the PWD screen.
 
-We've successfully deployed our application. One thing to note is that we did not have to tell Swarm to put the database on the Windows node or the Java webserver on the Linux node. It was able to sort that out by itself. 
+We've successfully deployed our application.  
 
 Another key point is that our application code knows nothing about our networking code. The only thing it knows is that the database hostname is going to be `database`. So in our application code database connection string looks like this;
 
-```
-jdbc:sqlserver://database;user=MyUserName;password=*****;
-```
 
 So long as the database service is started with the name `database` and is on the same Swarm network, the two services can talk. 
 
@@ -482,9 +522,24 @@ A common scenario is the need to upgrade an application or application component
 
 2. Upgrade the Appserver service to version 2.0
 
+    Update the app:
+    Make a change to the python file 'app.py':
+
+    ```
+    import sys
+    sys.exit()
+    ```
+
+    Build and tag this image differently:
+    ```
+    docker build -t app:2.0 .
+    ```
+
+
+
     ```
     $ docker service update \
-    --image dockersamples/atsea-appserver:2.0 \
+    --image app:2.0 \
     --update-failure-action pause \
     --detach=true \
     appserver
@@ -496,11 +551,11 @@ A common scenario is the need to upgrade an application or application component
     $ docker service ps appserver
     ID                  NAME                IMAGE                               NODE                DESIRED STATE       CURRENT STATE
                         ERROR                              PORTS
-    pjt4g23r0oo1        appserver.1         dockersamples/atsea-appserver:2.0   node1               Running             Starting less
+    pjt4g23r0oo1        appserver.1         app:2.0   node1               Running             Starting less
     than a second ago
-    usx1sk2gtoib         \_ appserver.1     dockersamples/atsea-appserver:2.0   node2               Shutdown            Failed 5 seco
+    usx1sk2gtoib         \_ appserver.1     app:2.0   node2               Shutdown            Failed 5 seco
     nds ago              "task: non-zero exit (143): do…"
-    suee368vg3r1         \_ appserver.1     dockersamples/atsea-appserver:1.0   node1               Shutdown            Shutdown 24 seconds ago
+    suee368vg3r1         \_ appserver.1     app:1.0   node1               Shutdown            Shutdown 24 seconds ago
     ```
 
     Clearly there is some issue, as the containers are failing to start. 
@@ -535,11 +590,11 @@ A common scenario is the need to upgrade an application or application component
     ```
     $ docker service ps appserver
     ID                  NAME                IMAGE                               NODE                DESIRED STATE       CURRENT STATE                 ERROR      PORTS
-    yoswxm44q9vg        appserver.1         mikegcoleman/atsea_appserver:1.0    node2               Running             Running 11 seconds ago
-    lacfi5xiu6e7         \_ appserver.1     dockersamples/atsea-appserver:2.0   node1               Shutdown            Shutdown 25 seconds ago
-    tvcr9dwvm578         \_ appserver.1     dockersamples/atsea-appserver:2.0   node1               Shutdown            Failed 49 seconds ago         "task: non-zero exit (143): do…"
-    xg4274jpochx         \_ appserver.1     dockersamples/atsea-appserver:2.0   node1               Shutdown            Failed about a minute ago     "task: non-zero exit (143): do…"
-    z7toh7jwk8qf         \_ appserver.1     mikegcoleman/atsea_appserver:1.0    node1               Shutdown            Shutdown about a minute ago
+    yoswxm44q9vg        appserver.1         app:1.0    node2               Running             Running 11 seconds ago
+    lacfi5xiu6e7         \_ appserver.1     app:2.0   node1               Shutdown            Shutdown 25 seconds ago
+    tvcr9dwvm578         \_ appserver.1     app:2.0   node1               Shutdown            Failed 49 seconds ago         "task: non-zero exit (143): do…"
+    xg4274jpochx         \_ appserver.1     app:2.0   node1               Shutdown            Failed about a minute ago     "task: non-zero exit (143): do…"
+    z7toh7jwk8qf         \_ appserver.1     app:1.0    node1               Shutdown            Shutdown about a minute ago
     ```
 
     The top line shows the service is back on the `1.0` version, and running. 
@@ -550,9 +605,37 @@ A common scenario is the need to upgrade an application or application component
 
 8. Upgrade to version 3
 
+    Make more changes to the code, this time getting it to work:
+
+    Update python file 'app.py':
+
+    ```
+    from flask import Flask
+    from redis import Redis
+
+    app = Flask(__name__)
+    redis = Redis(host='database', port=6379)
+
+    @app.route('/')
+    def hello():
+        count = redis.incr('hits')
+        return 'Hello World 3.0! I have been seen {} times.\n'.format(count)
+
+    if __name__ == "__main__":
+        app.run(host="0.0.0.0", port=8000, debug=True)
+    ```
+
+    Build the container again:
+
+    ```
+    docker build -t app:3.0 .
+    ```
+
+
+
     ```
     $ docker service update \
-    --image dockersamples/atsea-appserver:3.0 \
+    --image app:3.0 \
     --update-failure-action pause \
     --detach=true \
     appserver
@@ -564,10 +647,10 @@ A common scenario is the need to upgrade an application or application component
     ```
     $ docker service ps appserver
     ID                  NAME                IMAGE                               NODEDESIRED STATE       CURRENT STATE             ERROR                              PORTS
-    ytygwmyhumrt        appserver.1         dockersamples/atsea-appserver:3.0   node1Running             Running 29 seconds ago
-    zjkmbjw7u8e0         \_ appserver.1     mikegcoleman/atsea_appserver:1.0    node1Shutdown            Shutdown 47 seconds ago
-    wemedok12frl         \_ appserver.1     dockersamples/atsea-appserver:2.0   node1Shutdown            Failed 2 minutes ago      "task: non-zero exit (143): do…"
-    u6wd7wje82zn         \_ appserver.1     dockersamples/atsea-appserver:2.0   node1Shutdown            Failed 2 minutes ago      "task: non-zero exit (143): do…"
+    ytygwmyhumrt        appserver.1         app:3.0   node1Running             Running 29 seconds ago
+    zjkmbjw7u8e0         \_ appserver.1     app:1.0    node1Shutdown            Shutdown 47 seconds ago
+    wemedok12frl         \_ appserver.1     app:2.0   node1Shutdown            Failed 2 minutes ago      "task: non-zero exit (143): do…"
+    u6wd7wje82zn         \_ appserver.1     app:2.0   node1Shutdown            Failed 2 minutes ago      "task: non-zero exit (143): do…"
     ```
 
 10. Once the status reports back "Running xx seconds", reload website the website once again to verify that the new version has been deployed
@@ -592,17 +675,17 @@ The new update has really increased traffic to the site. As a result we need to 
     $ docker service ps appserver
     ID                  NAME                IMAGE                               NODE                DESIRED STATE       CURRENT STATE             ERROR
       PORTS
-    vfbzj3axoays        appserver.1         dockersamples/atsea-appserver:3.0   node1               Running             Running 2 minutes ago
+    vfbzj3axoays        appserver.1         app:3.0   node1               Running             Running 2 minutes ago
 
-    yoswxm44q9vg         \_ appserver.1     mikegcoleman/atsea_appserver:1.0    node2               Shutdown            Shutdown 2 minutes ago
-    tvcr9dwvm578         \_ appserver.1     dockersamples/atsea-appserver:2.0   node1               Shutdown            Failed 5 minutes ago      "task: non-zero exit (143): do…"
-    xg4274jpochx         \_ appserver.1     dockersamples/atsea-appserver:2.0   node1               Shutdown            Failed 6 minutes ago      "task: non-zero exit (143): do…"
-    z7toh7jwk8qf         \_ appserver.1     mikegcoleman/atsea_appserver:1.0    node1               Shutdown            Shutdown 7 minutes ago
-    i474a8emgwbc        appserver.2         dockersamples/atsea-appserver:3.0   node2               Running             Starting 30 seconds ago
-    gu7rphvp2q3l        appserver.3         dockersamples/atsea-appserver:3.0   node2               Running             Starting 30 seconds ago
-    gzjdye1kne33        appserver.4         dockersamples/atsea-appserver:3.0   node1               Running             Running 7 seconds ago
-    u596cqkgf2aa        appserver.5         dockersamples/atsea-appserver:3.0   node2               Running             Starting 30 seconds ago
-    jqkokd2uoki6        appserver.6         dockersamples/atsea-appserver:3.0   node1               Running             Running 12 seconds ag
+    yoswxm44q9vg         \_ appserver.1     app:1.0    node2               Shutdown            Shutdown 2 minutes ago
+    tvcr9dwvm578         \_ appserver.1     app:2.0   node1               Shutdown            Failed 5 minutes ago      "task: non-zero exit (143): do…"
+    xg4274jpochx         \_ appserver.1     app:2.0   node1               Shutdown            Failed 6 minutes ago      "task: non-zero exit (143): do…"
+    z7toh7jwk8qf         \_ appserver.1     app:1.0    node1               Shutdown            Shutdown 7 minutes ago
+    i474a8emgwbc        appserver.2         app:3.0   node2               Running             Starting 30 seconds ago
+    gu7rphvp2q3l        appserver.3         app:3.0   node2               Running             Starting 30 seconds ago
+    gzjdye1kne33        appserver.4         app:3.0   node1               Running             Running 7 seconds ago
+    u596cqkgf2aa        appserver.5         app:3.0   node2               Running             Starting 30 seconds ago
+    jqkokd2uoki6        appserver.6         app:3.0   node1               Running             Running 12 seconds ag
     ```
 
 Docker is starting up 5 new instances of the appserver, and is placing them across both the nodes in the cluster. 
@@ -627,19 +710,19 @@ In it's current state, Swarm expects there to be six instances of the appserver.
     ```
     $ docker service ps appserver
     ID                  NAME                IMAGE                               NODE                DESIRED STATE       CURRENT STATE             ERROR  PORTS
-    vfbzj3axoays        appserver.1         dockersamples/atsea-appserver:3.0   node1               Running             Running 8 minutes ago
-    yoswxm44q9vg         \_ appserver.1     mikegcoleman/atsea_appserver:1.0    node2               Shutdown            Shutdown 8 minutes ago
-    tvcr9dwvm578         \_ appserver.1     dockersamples/atsea-appserver:2.0   node1               Shutdown            Failed 11 minutes ago     "task: non-zero exit (143): do…"
-    xg4274jpochx         \_ appserver.1     dockersamples/atsea-appserver:2.0   node1               Shutdown            Failed 12 minutes ago     "task: non-zero exit (143): do…"
-    z7toh7jwk8qf         \_ appserver.1     mikegcoleman/atsea_appserver:1.0    node1               Shutdown            Shutdown 12 minutes ago
-    zmp7mfpme2go        appserver.2         dockersamples/atsea-appserver:3.0   node1               Running             Starting 5 seconds ago
-    i474a8emgwbc         \_ appserver.2     dockersamples/atsea-appserver:3.0   node2               Shutdown            Shutdown 5 seconds ago
-    l7gxju3x6zx8        appserver.3         dockersamples/atsea-appserver:3.0   node1               Running             Starting 5 seconds ago
-    gu7rphvp2q3l         \_ appserver.3     dockersamples/atsea-appserver:3.0   node2               Shutdown            Shutdown 5 seconds ago
-    gzjdye1kne33        appserver.4         dockersamples/atsea-appserver:3.0   node1               Running             Running 5 minutes ago
-    ure9u7li7myv        appserver.5         dockersamples/atsea-appserver:3.0   node1               Running             Starting 5 seconds ago
-    u596cqkgf2aa         \_ appserver.5     dockersamples/atsea-appserver:3.0   node2               Shutdown            Shutdown 5 seconds ago
-    jqkokd2uoki6        appserver.6         dockersamples/atsea-appserver:3.0   node1               Running             Running 6 minutes ago
+    vfbzj3axoays        appserver.1         app:3.0   node1               Running             Running 8 minutes ago
+    yoswxm44q9vg         \_ appserver.1     app:1.0    node2               Shutdown            Shutdown 8 minutes ago
+    tvcr9dwvm578         \_ appserver.1     app:2.0   node1               Shutdown            Failed 11 minutes ago     "task: non-zero exit (143): do…"
+    xg4274jpochx         \_ appserver.1     app:2.0   node1               Shutdown            Failed 12 minutes ago     "task: non-zero exit (143): do…"
+    z7toh7jwk8qf         \_ appserver.1     app:1.0    node1               Shutdown            Shutdown 12 minutes ago
+    zmp7mfpme2go        appserver.2         app:3.0   node1               Running             Starting 5 seconds ago
+    i474a8emgwbc         \_ appserver.2     app:3.0   node2               Shutdown            Shutdown 5 seconds ago
+    l7gxju3x6zx8        appserver.3         app:3.0   node1               Running             Starting 5 seconds ago
+    gu7rphvp2q3l         \_ appserver.3     app:3.0   node2               Shutdown            Shutdown 5 seconds ago
+    gzjdye1kne33        appserver.4         app:3.0   node1               Running             Running 5 minutes ago
+    ure9u7li7myv        appserver.5         app:3.0   node1               Running             Starting 5 seconds ago
+    u596cqkgf2aa         \_ appserver.5     app:3.0   node2               Shutdown            Shutdown 5 seconds ago
+    jqkokd2uoki6        appserver.6         app:3.0   node1               Running             Running 6 minutes ago
     ```
 
     The output above shows the containers that werer running on `node2` have been shut down and are being restarted on `node`
@@ -649,8 +732,8 @@ In it's current state, Swarm expects there to be six instances of the appserver.
     ```
     $ docker service ls
     ID                  NAME                MODE                REPLICAS            IMAGE                               PORTS
-    qbeqlc6v0g0z        appserver           replicated          6/6                 dockersamples/atsea-appserver:3.0   *:8080->8080/tcps3luy288gn9l        
-    database            replicated          1/1                 sixeyed/atsea-db:mssql
+    qbeqlc6v0g0z        appserver           replicated          6/6                 app:3.0   *:8000->8000/tcps3luy288gn9l        
+    database            replicated          1/1                 redis:latest
     ```
 
     In a minute or two all the services should be restarted, and Swarm will report back that it has 6 of the expected 6 containers running
