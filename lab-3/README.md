@@ -433,7 +433,7 @@ This lab will deploy a two service application.  The application features a Java
     --network atsea \
     --name appserver \
     --detach=true \
-    solarwinds/awesomeapp:1.0
+    layer5/awesomeapp:1.0
     tqvr2cxk31tr0ryel5ey4zmwr
     ```
 
@@ -442,7 +442,7 @@ This lab will deploy a two service application.  The application features a Java
     ```
     $ docker service ls
     ID                  NAME                MODE                REPLICAS            IMAGE                               PORTS
-    tqvr2cxk31tr        appserver           replicated          1/1                 solarwinds/awesomeapp:1.0           *:8000->8000/
+    tqvr2cxk31tr        appserver           replicated          1/1                 layer5/awesomeapp:1.0           *:8000->8000/
     tcp
     xkm68h7z3wsu        database            replicated          1/1                 redis:latest
     ```
@@ -455,7 +455,7 @@ This lab will deploy a two service application.  The application features a Java
                 ERROR               PORTS
     jhetafd6jd7u        database.1          redis:latest                node2              Running             Running 3 min
     utes ago                        *:64024->1433/tcp
-    2cah7mw5a5c7        appserver.1         solarwinds/awesomeapp:1.0                         node1               Running             Running 6 min
+    2cah7mw5a5c7        appserver.1         layer5/awesomeapp:1.0                         node1               Running             Running 6 min
     utes ago
     ```
 
@@ -480,7 +480,7 @@ A common scenario is the need to upgrade an application or application component
 
     ```
     $ docker service update \
-    --image solarwinds/awesomeapp:2.0 \
+    --image layer5/awesomeapp:2.0 \
     --update-failure-action pause \
     --detach=true \
     appserver
@@ -492,11 +492,11 @@ A common scenario is the need to upgrade an application or application component
     $ docker service ps appserver
     ID                  NAME                IMAGE                               NODE                DESIRED STATE       CURRENT STATE
                         ERROR                              PORTS
-    pjt4g23r0oo1        appserver.1         solarwinds/awesomeapp:2.0   node1               Running             Starting less
+    pjt4g23r0oo1        appserver.1         layer5/awesomeapp:2.0   node1               Running             Starting less
     than a second ago
-    usx1sk2gtoib         \_ appserver.1     solarwinds/awesomeapp:2.0   node2               Shutdown            Failed 5 seco
+    usx1sk2gtoib         \_ appserver.1     layer5/awesomeapp:2.0   node2               Shutdown            Failed 5 seco
     nds ago              "task: non-zero exit (143): do…"
-    suee368vg3r1         \_ appserver.1     solarwinds/awesomeapp:1.0   node1               Shutdown            Shutdown 24 seconds ago
+    suee368vg3r1         \_ appserver.1     layer5/awesomeapp:1.0   node1               Shutdown            Shutdown 24 seconds ago
     ```
 
     Clearly there is some issue, as the containers are failing to start. 
@@ -531,11 +531,11 @@ A common scenario is the need to upgrade an application or application component
     ```
     $ docker service ps appserver
     ID                  NAME                IMAGE                               NODE                DESIRED STATE       CURRENT STATE                 ERROR      PORTS
-    yoswxm44q9vg        appserver.1         solarwinds/awesomeapp:1.0    node2               Running             Running 11 seconds ago
-    lacfi5xiu6e7         \_ appserver.1     solarwinds/awesomeapp:2.0   node1               Shutdown            Shutdown 25 seconds ago
-    tvcr9dwvm578         \_ appserver.1     solarwinds/awesomeapp:2.0   node1               Shutdown            Failed 49 seconds ago         "task: non-zero exit (143): do…"
-    xg4274jpochx         \_ appserver.1     solarwinds/awesomeapp:2.0   node1               Shutdown            Failed about a minute ago     "task: non-zero exit (143): do…"
-    z7toh7jwk8qf         \_ appserver.1     solarwinds/awesomeapp:1.0    node1               Shutdown            Shutdown about a minute ago
+    yoswxm44q9vg        appserver.1         layer5/awesomeapp:1.0    node2               Running             Running 11 seconds ago
+    lacfi5xiu6e7         \_ appserver.1     layer5/awesomeapp:2.0   node1               Shutdown            Shutdown 25 seconds ago
+    tvcr9dwvm578         \_ appserver.1     layer5/awesomeapp:2.0   node1               Shutdown            Failed 49 seconds ago         "task: non-zero exit (143): do…"
+    xg4274jpochx         \_ appserver.1     layer5/awesomeapp:2.0   node1               Shutdown            Failed about a minute ago     "task: non-zero exit (143): do…"
+    z7toh7jwk8qf         \_ appserver.1     layer5/awesomeapp:1.0    node1               Shutdown            Shutdown about a minute ago
     ```
 
     The top line shows the service is back on the `1.0` version, and running. 
@@ -548,7 +548,7 @@ A common scenario is the need to upgrade an application or application component
 
     ```
     $ docker service update \
-    --image solarwinds/awesomeapp:3.0 \
+    --image layer5/awesomeapp:3.0 \
     --update-failure-action pause \
     --detach=true \
     appserver
@@ -560,10 +560,10 @@ A common scenario is the need to upgrade an application or application component
     ```
     $ docker service ps appserver
     ID                  NAME                IMAGE                               NODEDESIRED STATE       CURRENT STATE             ERROR                              PORTS
-    ytygwmyhumrt        appserver.1         solarwinds/awesomeapp:3.0   node1Running             Running 29 seconds ago
-    zjkmbjw7u8e0         \_ appserver.1     solarwinds/awesomeapp:1.0    node1Shutdown            Shutdown 47 seconds ago
-    wemedok12frl         \_ appserver.1     solarwinds/awesomeapp:2.0   node1Shutdown            Failed 2 minutes ago      "task: non-zero exit (143): do…"
-    u6wd7wje82zn         \_ appserver.1     solarwinds/awesomeapp:2.0   node1Shutdown            Failed 2 minutes ago      "task: non-zero exit (143): do…"
+    ytygwmyhumrt        appserver.1         layer5/awesomeapp:3.0   node1Running             Running 29 seconds ago
+    zjkmbjw7u8e0         \_ appserver.1     layer5/awesomeapp:1.0    node1Shutdown            Shutdown 47 seconds ago
+    wemedok12frl         \_ appserver.1     layer5/awesomeapp:2.0   node1Shutdown            Failed 2 minutes ago      "task: non-zero exit (143): do…"
+    u6wd7wje82zn         \_ appserver.1     layer5/awesomeapp:2.0   node1Shutdown            Failed 2 minutes ago      "task: non-zero exit (143): do…"
     ```
 
 10. Once the status reports back "Running xx seconds", reload website the website once again to verify that the new version has been deployed
@@ -588,17 +588,17 @@ The new update has really increased traffic to the site. As a result we need to 
     $ docker service ps appserver
     ID                  NAME                IMAGE                               NODE                DESIRED STATE       CURRENT STATE             ERROR
       PORTS
-    vfbzj3axoays        appserver.1         solarwinds/awesomeapp:3.0   node1               Running             Running 2 minutes ago
+    vfbzj3axoays        appserver.1         layer5/awesomeapp:3.0   node1               Running             Running 2 minutes ago
 
-    yoswxm44q9vg         \_ appserver.1     solarwinds/awesomeapp:1.0    node2               Shutdown            Shutdown 2 minutes ago
-    tvcr9dwvm578         \_ appserver.1     solarwinds/awesomeapp:2.0   node1               Shutdown            Failed 5 minutes ago      "task: non-zero exit (143): do…"
-    xg4274jpochx         \_ appserver.1     solarwinds/awesomeapp:2.0   node1               Shutdown            Failed 6 minutes ago      "task: non-zero exit (143): do…"
-    z7toh7jwk8qf         \_ appserver.1     solarwinds/awesomeapp:1.0    node1               Shutdown            Shutdown 7 minutes ago
-    i474a8emgwbc        appserver.2         solarwinds/awesomeapp:3.0   node2               Running             Starting 30 seconds ago
-    gu7rphvp2q3l        appserver.3         solarwinds/awesomeapp:3.0   node2               Running             Starting 30 seconds ago
-    gzjdye1kne33        appserver.4         solarwinds/awesomeapp:3.0   node1               Running             Running 7 seconds ago
-    u596cqkgf2aa        appserver.5         solarwinds/awesomeapp:3.0   node2               Running             Starting 30 seconds ago
-    jqkokd2uoki6        appserver.6         solarwinds/awesomeapp:3.0   node1               Running             Running 12 seconds ag
+    yoswxm44q9vg         \_ appserver.1     layer5/awesomeapp:1.0    node2               Shutdown            Shutdown 2 minutes ago
+    tvcr9dwvm578         \_ appserver.1     layer5/awesomeapp:2.0   node1               Shutdown            Failed 5 minutes ago      "task: non-zero exit (143): do…"
+    xg4274jpochx         \_ appserver.1     layer5/awesomeapp:2.0   node1               Shutdown            Failed 6 minutes ago      "task: non-zero exit (143): do…"
+    z7toh7jwk8qf         \_ appserver.1     layer5/awesomeapp:1.0    node1               Shutdown            Shutdown 7 minutes ago
+    i474a8emgwbc        appserver.2         layer5/awesomeapp:3.0   node2               Running             Starting 30 seconds ago
+    gu7rphvp2q3l        appserver.3         layer5/awesomeapp:3.0   node2               Running             Starting 30 seconds ago
+    gzjdye1kne33        appserver.4         layer5/awesomeapp:3.0   node1               Running             Running 7 seconds ago
+    u596cqkgf2aa        appserver.5         layer5/awesomeapp:3.0   node2               Running             Starting 30 seconds ago
+    jqkokd2uoki6        appserver.6         layer5/awesomeapp:3.0   node1               Running             Running 12 seconds ag
     ```
 
 Docker is starting up 5 new instances of the appserver, and is placing them across both the nodes in the cluster. 
@@ -623,19 +623,19 @@ In it's current state, Swarm expects there to be six instances of the appserver.
     ```
     $ docker service ps appserver
     ID                  NAME                IMAGE                               NODE                DESIRED STATE       CURRENT STATE             ERROR  PORTS
-    vfbzj3axoays        appserver.1         solarwinds/awesomeapp:3.0   node1               Running             Running 8 minutes ago
-    yoswxm44q9vg         \_ appserver.1     solarwinds/awesomeapp:1.0    node2               Shutdown            Shutdown 8 minutes ago
-    tvcr9dwvm578         \_ appserver.1     solarwinds/awesomeapp:2.0   node1               Shutdown            Failed 11 minutes ago     "task: non-zero exit (143): do…"
-    xg4274jpochx         \_ appserver.1     solarwinds/awesomeapp:2.0   node1               Shutdown            Failed 12 minutes ago     "task: non-zero exit (143): do…"
-    z7toh7jwk8qf         \_ appserver.1     solarwinds/awesomeapp:1.0    node1               Shutdown            Shutdown 12 minutes ago
-    zmp7mfpme2go        appserver.2         solarwinds/awesomeapp:3.0   node1               Running             Starting 5 seconds ago
-    i474a8emgwbc         \_ appserver.2     solarwinds/awesomeapp:3.0   node2               Shutdown            Shutdown 5 seconds ago
-    l7gxju3x6zx8        appserver.3         solarwinds/awesomeapp:3.0   node1               Running             Starting 5 seconds ago
-    gu7rphvp2q3l         \_ appserver.3     solarwinds/awesomeapp:3.0   node2               Shutdown            Shutdown 5 seconds ago
-    gzjdye1kne33        appserver.4         solarwinds/awesomeapp:3.0   node1               Running             Running 5 minutes ago
-    ure9u7li7myv        appserver.5         solarwinds/awesomeapp:3.0   node1               Running             Starting 5 seconds ago
-    u596cqkgf2aa         \_ appserver.5     solarwinds/awesomeapp:3.0   node2               Shutdown            Shutdown 5 seconds ago
-    jqkokd2uoki6        appserver.6         solarwinds/awesomeapp:3.0   node1               Running             Running 6 minutes ago
+    vfbzj3axoays        appserver.1         layer5/awesomeapp:3.0   node1               Running             Running 8 minutes ago
+    yoswxm44q9vg         \_ appserver.1     layer5/awesomeapp:1.0    node2               Shutdown            Shutdown 8 minutes ago
+    tvcr9dwvm578         \_ appserver.1     layer5/awesomeapp:2.0   node1               Shutdown            Failed 11 minutes ago     "task: non-zero exit (143): do…"
+    xg4274jpochx         \_ appserver.1     layer5/awesomeapp:2.0   node1               Shutdown            Failed 12 minutes ago     "task: non-zero exit (143): do…"
+    z7toh7jwk8qf         \_ appserver.1     layer5/awesomeapp:1.0    node1               Shutdown            Shutdown 12 minutes ago
+    zmp7mfpme2go        appserver.2         layer5/awesomeapp:3.0   node1               Running             Starting 5 seconds ago
+    i474a8emgwbc         \_ appserver.2     layer5/awesomeapp:3.0   node2               Shutdown            Shutdown 5 seconds ago
+    l7gxju3x6zx8        appserver.3         layer5/awesomeapp:3.0   node1               Running             Starting 5 seconds ago
+    gu7rphvp2q3l         \_ appserver.3     layer5/awesomeapp:3.0   node2               Shutdown            Shutdown 5 seconds ago
+    gzjdye1kne33        appserver.4         layer5/awesomeapp:3.0   node1               Running             Running 5 minutes ago
+    ure9u7li7myv        appserver.5         layer5/awesomeapp:3.0   node1               Running             Starting 5 seconds ago
+    u596cqkgf2aa         \_ appserver.5     layer5/awesomeapp:3.0   node2               Shutdown            Shutdown 5 seconds ago
+    jqkokd2uoki6        appserver.6         layer5/awesomeapp:3.0   node1               Running             Running 6 minutes ago
     ```
 
     The output above shows the containers that werer running on `node2` have been shut down and are being restarted on `node`
@@ -645,7 +645,7 @@ In it's current state, Swarm expects there to be six instances of the appserver.
     ```
     $ docker service ls
     ID                  NAME                MODE                REPLICAS            IMAGE                               PORTS
-    qbeqlc6v0g0z        appserver           replicated          6/6                 solarwinds/awesomeapp:3.0   *:8000->8000/tcps3luy288gn9l        
+    qbeqlc6v0g0z        appserver           replicated          6/6                 layer5/awesomeapp:3.0   *:8000->8000/tcps3luy288gn9l        
     database            replicated          1/1                 redis:latest
     ```
 
