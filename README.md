@@ -32,7 +32,8 @@ Find out more on the <a href="https://layer5.io/community/meshmate">Layer5 commu
 
 ## Authors
 
-* Lee Calcote [Twitter](https://twitter.com/lcalcote), [LinkedIn](https://linkedin.com/in/leecalcote), [Blog](https://gingergeek.com), [Talks](https://calcotestudios.com)  See other talks and workshops given by Lee at https://calcotestudios.com/talks.
+* Lee Calcote [Twitter](https://twitter.com/lcalcote), [LinkedIn](https://linkedin.com/in/leecalcote), [Blog](https://gingergeek.com), [Talks](https://calcotestudios.com)  
+  * See other talks and workshops given by Lee at https://calcotestudios.com/talks.
 
 ### About Layer5
 
