@@ -36,5 +36,5 @@ This PR fixes # <!-- (put issue # here to ensure it is automatically closed upon
 
 #### Checklist
 <!-- Place an '[x]' (no spaces) in all applicable fields. -->
-- [] [Signed commits](https://github.com/layer5io/meshery/blob/master/CONTRIBUTING.md#signing-off-on-commits-developer-certificate-of-origin).
-- [] PR title includes `[<name of area>]:<description>`
+- [ ] [Signed commits](https://github.com/layer5io/meshery/blob/master/CONTRIBUTING.md#signing-off-on-commits-developer-certificate-of-origin).
+- [ ] PR title includes `[<name of area>]:<description>`
