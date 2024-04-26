@@ -1,8 +1,8 @@
 # Docker 101 - Linux (Part 3): Docker Swarm and Container Networking
 
-So far all of the previous exercises have been based around running a single container on a single host. 
+So far all of the previous exercises have been based around running a single container on a single host.
 
-This section will cover how to use multiple hosts to provide fault tolerance as well as incresed performance. As part of that discussion it will also provide an overview of Docker's multi-host networking capabilities. 
+This section will cover how to use multiple hosts to provide fault tolerance as well as incresed performance. As part of that discussion it will also provide an overview of Docker's multi-host networking capabilities.
 
 #### What is "Orchestration"
 
@@ -10,12 +10,11 @@ If you heard about containers you've probably heard about orchstration as well. 
 
 Clustering is the concept of taking a group of machines and treating them as a single computing resource. These machines are capable of accepting any workload becaues they all offer the same capabilities. These clustered machines don't have to be running on the same infrastructure - they could be a  mix of bare metal and VMs for instance.  
 
-Scheduling is the process of deciding where a workload should reside. When an admin starts a new instance of website she can decide what region it needs to go on or if it should be on bare metal or in the cloud. The scheduler will make that happen. Schedulers also make sure that the application maintains its desired state. For example, if there were 10 copies of a web site running, and one of them crashed, the scheduler would know this and start up a new instance to take the failed one's place. 
+Scheduling is the process of deciding where a workload should reside. When an admin starts a new instance of website she can decide what region it needs to go on or if it should be on bare metal or in the cloud. The scheduler will make that happen. Schedulers also make sure that the application maintains its desired state. For example, if there were 10 copies of a web site running, and one of them crashed, the scheduler would know this and start up a new instance to take the failed one's place.
 
+With Docker ther is a built-in orchestrator: Docker Swarm. It provides both clustering and scheduling as well as many other advanced services.
 
-With Docker ther is a built-in orchestrator: Docker Swarm. It provides both clustering and scheduling as well as many other advanced services. 
-
-The next part of the lab will start with the deployment of a 3 node Docker swarm cluster. 
+The next part of the lab will start with the deployment of a 3 node Docker swarm cluster.
 
 ### Build your cluster
 
@@ -29,7 +28,7 @@ Note: If you have just completed a previous part of the workshop, please close t
 
 3. Click the  `+ Add New Instance`
 
-  There are now three standalone Docker hosts. 
+  There are now three standalone Docker hosts.
 
 4. In the console for `node1` initialize Docker Swarm
 
@@ -44,7 +43,7 @@ Note: If you have just completed a previous part of the workshop, please close t
     To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
     ```
 
-    `node1` is now a Swarm manager node. Manager nodes are responsible for ensuring the integrity of the cluster as well as managing running services. 
+    `node1` is now a Swarm manager node. Manager nodes are responsible for ensuring the integrity of the cluster as well as managing running services.
 
 5. Copy the `docker swarm join` output from `node1`
 
@@ -63,7 +62,7 @@ Note: If you have just completed a previous part of the workshop, please close t
     This node joined a swarm as a worker.
     ```
 
-    The three nodes have now been clustered into a single Docker swarm. An important thing to note is that clusters can be made up of Linux nodes, Windows nodes, or a combination of both. 
+    The three nodes have now been clustered into a single Docker swarm. An important thing to note is that clusters can be made up of Linux nodes, Windows nodes, or a combination of both.
 
 8. Switch back to `node1`
 
@@ -77,20 +76,20 @@ Note: If you have just completed a previous part of the workshop, please close t
     xflngp99u1r9pn7bryqbbrrvq     win000046           Ready               Active
     ```
 
-    Commands against the swarm can only be issued from the manager node. Attempting to run the above command against `node2` or `node3` would result in an error. 
+    Commands against the swarm can only be issued from the manager node. Attempting to run the above command against `node2` or `node3` would result in an error.
 
     ```
     $ docker node ls
     Error response from daemon: This node is not a swarm manager. Worker nodes can't be used to view or modify cluster state. Please run this command on a manager node or promote the current node to a manager.
     ```
 
-With the Swarm cluster built it's time to move to a discussion on networking. 
+With the Swarm cluster built it's time to move to a discussion on networking.
 
 Docker supports several different networking options, but this lab will cover the two most popular: bridge and overlay.
 
-Bridge networks are only available on the local host, and can be created on hosts in swarm clusters as well as standalone hosts. However, in a swarm cluster, even though the machines are tied together, bridge networks only work on the host on which they were created. 
+Bridge networks are only available on the local host, and can be created on hosts in swarm clusters as well as standalone hosts. However, in a swarm cluster, even though the machines are tied together, bridge networks only work on the host on which they were created.
 
-Overlay networks faciliate the creation of networks that span Docker hosts. While it's possible to network together hosts that are not in a Swarm cluster, it's a very manual task requiring the addition of an external key value store. With Docker swarm creating overlay networks is trivial. 
+Overlay networks faciliate the creation of networks that span Docker hosts. While it's possible to network together hosts that are not in a Swarm cluster, it's a very manual task requiring the addition of an external key value store. With Docker swarm creating overlay networks is trivial.
 
 ### Bridge networking overview
 
@@ -118,7 +117,7 @@ As previously mentioned, bridge networks faciliate the create of software-define
 
     The newly created `mybridge` network is listed.
 
-    > Note: Docker creates several networks by default, however the purpose of those networks is outside the scope of this workshop. 
+    > Note: Docker creates several networks by default, however the purpose of those networks is outside the scope of this workshop.
 
 3. Switch to `node2`
 
@@ -134,7 +133,7 @@ As previously mentioned, bridge networks faciliate the create of software-define
     3dec80db87e4        none                null                local
     ```
 
-    Notice that the same networks names exist on `node2` but their ID's are different. And, `mybridge` does not show up at all. 
+    Notice that the same networks names exist on `node2` but their ID's are different. And, `mybridge` does not show up at all.
 
 5. Move back to `node1`
 
@@ -152,7 +151,8 @@ As previously mentioned, bridge networks faciliate the create of software-define
     Status: Downloaded newer image for alpine:latest
     974903580c3e452237835403bf3a210afad2ad1dff3e0b90f6d421733c2e05e6
     ```
-    > Note: We run the `top` process to keep the container from exiting as soon as it's created. 
+
+    > Note: We run the `top` process to keep the container from exiting as soon as it's created.
 
 7. Start another Alpine container named `alpine client`
 
@@ -171,7 +171,7 @@ As previously mentioned, bridge networks faciliate the create of software-define
     ping: bad address 'alpine_host'
     ```
 
-    Because the two containers are not on the same network they cannot reach each other. 
+    Because the two containers are not on the same network they cannot reach each other.
 
 9. Inspect `alpine_host` and `alpine_client` to see which networks they are attached to.
 
@@ -183,7 +183,7 @@ As previously mentioned, bridge networks faciliate the create of software-define
     map[bridge:0xc4204420c0]
     ```
 
-    `alpine_host` is, as expected, attached to the `mybridge` network. 
+    `alpine_host` is, as expected, attached to the `mybridge` network.
 
     `alpine_client` is attached to the default bridge network `bridge`
 
@@ -194,7 +194,7 @@ As previously mentioned, bridge networks faciliate the create of software-define
     alpine_client
     ```
 
-11. Start another container called `alpine_client` but attach it to the `mybridge` network this time. 
+11. Start another container called `alpine_client` but attach it to the `mybridge` network this time.
 
     ```
     $ docker container run \
@@ -228,9 +228,9 @@ As previously mentioned, bridge networks faciliate the create of software-define
     round-trip min/avg/max = 0.088/0.106/0.122 ms
     ```
 
-    Something to notice is that it was not necessary to specify an IP address.  Docker has a built in DNS that resolved `alpine_client` to the correct address. 
+    Something to notice is that it was not necessary to specify an IP address.  Docker has a built in DNS that resolved `alpine_client` to the correct address.
 
-Being able to network containers on a single host is not extremely useful. It might be fine for a simple test envrionment, but production environments require the ability provide the scalability and fault tolerance that comes from having multiple interconnected hosts. 
+Being able to network containers on a single host is not extremely useful. It might be fine for a simple test envrionment, but production environments require the ability provide the scalability and fault tolerance that comes from having multiple interconnected hosts.
 
 This is where overlay networking comes in.
 
@@ -238,7 +238,7 @@ This is where overlay networking comes in.
 
 Overlay networks in Docker are software defined networks that span multiple hosts (unlike a bridge network which is limited to a single Docker host). This allows containers on different hosts to easily communicate on the Docker networking fabric (vs having to move out to the host's network).
 
-This next section covers building an overlay network and having two containers communicate with each other. 
+This next section covers building an overlay network and having two containers communicate with each other.
 
 1. Remove the existing Alpine containers
 
@@ -257,7 +257,7 @@ This next section covers building an overlay network and having two containers c
 
     > Note: We have to use the `--attachable` flag because by default you cannot use `docker run` on overlay networks that are part of a swarm. The preferred method is to use a Docker *service* which is covered later in the workshop.
 
-3. List the networks on the host to verify that the `myoverlay` network was created. 
+3. List the networks on the host to verify that the `myoverlay` network was created.
 
     ```
     $ docker network ls
@@ -271,7 +271,7 @@ This next section covers building an overlay network and having two containers c
     dbd52ffda3ae        none                null                local
     ```
 
-3. Create an Alpine container and attach it to the `myoverlay` network. 
+3. Create an Alpine container and attach it to the `myoverlay` network.
 
     ```
     $ docker container run \
@@ -298,7 +298,7 @@ This next section covers building an overlay network and having two containers c
 
     Notice anything out of the ordinary? Where's the `myoverlay` network?
 
-    Docker won't extend the network to hosts where it's not needed. In this case, there are no containers attached to `myoverlay` on `node2` so the network has not been extended to the host. 
+    Docker won't extend the network to hosts where it's not needed. In this case, there are no containers attached to `myoverlay` on `node2` so the network has not been extended to the host.
 
 6. Start an alpine container and attach it to `myoverlay`
 
@@ -342,6 +342,7 @@ This next section covers building an overlay network and having two containers c
     64 bytes from 10.0.0.2: seq=3 ttl=64 time=0.201 ms
     64 bytes from 10.0.0.2: seq=4 ttl=64 time=0.137 ms
     ```
+
     Networking also works betwen Linux and Windows nodes
 
 9. Move to the `node3`
@@ -367,7 +368,7 @@ This next section covers building an overlay network and having two containers c
 
 While we have been using `docker run` to instantiate docker containers on our Swarm cluster, the preferred way to actually run applications is via a  [*service*](https://docs.docker.com/engine/swarm/how-swarm-mode-works/services/).
 
-Services are an abstraction in Docker that represent an application or component of an application. For instance a web front end service connecting to a database backend service. You can deploy an application made up of a single service. In fact, this is quite common when [modernizing traditional applications](https://goto.docker.com/rs/929-FJL-178/images/SB_MTA_04.14.2017.pdf). 
+Services are an abstraction in Docker that represent an application or component of an application. For instance a web front end service connecting to a database backend service. You can deploy an application made up of a single service. In fact, this is quite common when [modernizing traditional applications](https://goto.docker.com/rs/929-FJL-178/images/SB_MTA_04.14.2017.pdf).
 
 The service construct provides a host of useful features including:
 
@@ -379,9 +380,9 @@ The service construct provides a host of useful features including:
 * Upgrades and rollback
 * Scaling
 
-This workshop cannot possibly cover all these topics, but will address several key points. 
+This workshop cannot possibly cover all these topics, but will address several key points.
 
-This lab will deploy a two service application.  The application features a Java-based web front end running on Linux, and a Microsoft SQL server running on Windows. 
+This lab will deploy a two service application.  The application features a Java-based web front end running on Linux, and a Microsoft SQL server running on Windows.
 
 ### Deploying an Application with Docker Swarm
 
@@ -406,12 +407,13 @@ This lab will deploy a two service application.  The application features a Java
     redis
     ywlkfxw2oim67fuf9tue7ndyi
     ```
+
     The service is created with the following parameters:
 
     * `--name`: Gives the service an easily remembered name
     * `--endpoint-mode`: Today all services running on Windows need to be started in DNS round robin mode.
     * `--network`: Attaches the containers from our service to the `atsea` network
-    * `--publish`: Exposes port 6379 but only on the host. 
+    * `--publish`: Exposes port 6379 but only on the host.
     * `--detach`: Runs the service in the background
     * Our service is based off the image `sixeyed/atsea-db:mssql`
 
@@ -465,8 +467,7 @@ We've successfully deployed our application.
 
 Another key point is that our application code knows nothing about our networking code. The only thing it knows is that the database hostname is going to be `database`. So in our application code database connection string looks like this;
 
-
-So long as the database service is started with the name `database` and is on the same Swarm network, the two services can talk. 
+So long as the database service is started with the name `database` and is on the same Swarm network, the two services can talk.
 
 ### Upgrades and Rollback
 
@@ -499,7 +500,7 @@ A common scenario is the need to upgrade an application or application component
     suee368vg3r1         \_ appserver.1     layer5/awesomeapp:1.0   node1               Shutdown            Shutdown 24 seconds ago
     ```
 
-    Clearly there is some issue, as the containers are failing to start. 
+    Clearly there is some issue, as the containers are failing to start.
 
 4. Check on the satus of the update
 
@@ -512,9 +513,9 @@ A common scenario is the need to upgrade an application or application component
     }
     ```
 
-    Because we had set ` --update-failure-action` to pause, Swarm paused the update. 
+    Because we had set `--update-failure-action` to pause, Swarm paused the update.
 
-    In the case of failed upgrade, Swarm makes it easy to recover. Simply issue the `--rollback` command to the service. 
+    In the case of failed upgrade, Swarm makes it easy to recover. Simply issue the `--rollback` command to the service.
 
 5. Roll the service back to the original version
 
@@ -526,7 +527,7 @@ A common scenario is the need to upgrade an application or application component
     appserver
     ```
 
- 6. Check on the status of the service
+6. Check on the status of the service
 
     ```
     $ docker service ps appserver
@@ -538,11 +539,11 @@ A common scenario is the need to upgrade an application or application component
     z7toh7jwk8qf         \_ appserver.1     layer5/awesomeapp:1.0    node1               Shutdown            Shutdown about a minute ago
     ```
 
-    The top line shows the service is back on the `1.0` version, and running. 
+    The top line shows the service is back on the `1.0` version, and running.
 
 7. Visit the website to makes sure it's running
 
-    That was a simulated upgrade failure and rollback. Next the service will be successfully upgraded to version 3 of the app. 
+    That was a simulated upgrade failure and rollback. Next the service will be successfully upgraded to version 3 of the app.
 
 8. Upgrade to version 3
 
@@ -570,7 +571,7 @@ A common scenario is the need to upgrade an application or application component
 
 ### Scale the front end
 
-The new update has really increased traffic to the site. As a result we need to scale our web front end out. This is done by issuing a `docker service update` and specifying the number of replicas to deploy. 
+The new update has really increased traffic to the site. As a result we need to scale our web front end out. This is done by issuing a `docker service update` and specifying the number of replicas to deploy.
 
 1. Scale to 6 replicas of the web front-end
 
@@ -601,16 +602,17 @@ The new update has really increased traffic to the site. As a result we need to 
     jqkokd2uoki6        appserver.6         layer5/awesomeapp:3.0   node1               Running             Running 12 seconds ag
     ```
 
-Docker is starting up 5 new instances of the appserver, and is placing them across both the nodes in the cluster. 
+Docker is starting up 5 new instances of the appserver, and is placing them across both the nodes in the cluster.
 
-When all 6 nodes are running, move on to the next step. 
+When all 6 nodes are running, move on to the next step.
 
 ### Failure and recovery
-The next exercise simulates a node failure. When a node fails the containers that were running there are, of course, lost as well. Swarm is constantly monitoring the state of the cluster, and when it detects an anomoly it attemps to bring the cluster back in to compliance. 
 
-In it's current state, Swarm expects there to be six instances of the appserver. When the node "fails" thre of those instances will go out of service. 
+The next exercise simulates a node failure. When a node fails the containers that were running there are, of course, lost as well. Swarm is constantly monitoring the state of the cluster, and when it detects an anomoly it attemps to bring the cluster back in to compliance.
 
-1. Putting a node into *drain* mode forces it to stop all the running containers it hosts, as well as preventing it from running any additional containers. 
+In it's current state, Swarm expects there to be six instances of the appserver. When the node "fails" thre of those instances will go out of service.
+
+1. Putting a node into *drain* mode forces it to stop all the running containers it hosts, as well as preventing it from running any additional containers.
 
     ```
     $ docker node update \
