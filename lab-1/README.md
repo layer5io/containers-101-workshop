@@ -22,8 +22,8 @@ Before we start, you'll need to gain access to your Linux VM, clone a GitHub rep
 
 If you do not have a DockerID (a free login used to access Docker Cloud, Docker Store, and Docker Hub), please visit [Docker Cloud](https://cloud.docker.com) to register for one.
 
-
 ### Access your Linux VM
+
 1. Visit [Play With Docker](https://hybrid.play-with-docker.com)
 2. Click `Start Session`
 2. On the left click `+ Add New Instance`
@@ -89,7 +89,6 @@ In this step we're going to start a new container and tell it to run the `hostna
 
 Containers which do one task and then exit can be very useful. You could build a Docker image that executes a script to configure something. Anyone can execute that task just by running the container - they don't need the actual scripts or configuration information.
 
-
 ### Run an interactive Ubuntu container
 
 You can run a container based on a different version of Linux than is running on your Docker host.
@@ -109,16 +108,16 @@ In the next example, we are going to run an Ubuntu Linux container on top of an 
     We're also telling the container to run `bash` as its main process (PID 1).
 
     ```
-    $ docker container run --interactive --tty --rm ubuntu bash
+    docker container run --interactive --tty --rm ubuntu bash
     ```
 
     When the container starts you'll drop into the bash shell with the default prompt `root@<container id>:/#`. Docker has attached to the shell in the container, relaying input and output between your local session and the shell session in the container.
 
 2. Run some commands in the container:
 
-    - `ls /` - lists the contents of the root directory
-    - `ps aux` - shows all running processes in the container.
-    - `cat /etc/issue` - shows which Linux distro the container is running, in this case Ubuntu 16.04 LTS
+    * `ls /` - lists the contents of the root directory
+    * `ps aux` - shows all running processes in the container.
+    * `cat /etc/issue` - shows which Linux distro the container is running, in this case Ubuntu 16.04 LTS
 
 3. Type `exit` to leave the shell session. This will terminate the `bash` process, causing your container to exit.
 
@@ -140,7 +139,6 @@ In the next example, we are going to run an Ubuntu Linux container on top of an 
 Interactive containers are useful when you are putting together your own image. You can run a container and verify all the steps you need to deploy your app, and capture them in a Dockerfile.
 
 > **Note:** You *can* [commit](https://docs.docker.com/engine/reference/commandline/commit/) a container to make an image from it - but you should avoid that wherever possible. It's much better to use a repeatable [Dockerfile](https://docs.docker.com/engine/reference/builder/) to build your image. You'll see that shortly.
-
 
 ### Run a background MySQL container
 
@@ -200,15 +198,15 @@ Background containers are how you'll run most applications. Here's a simple exam
     PID                 USER                TIME                COMMAND
     2876                999                 0:00                mysqld
     ```
-    
-	You should see the MySQL demon (`mysqld`) is running. Note that the PID shown here is the PID for this process on your docker host. To see the same `mysqld` process running as the main process of the container (PID 1) try:
-	
-	```
-	$ docker container exec mydb ps -ef
-	UID         PID   PPID  C STIME TTY          TIME CMD
-	mysql         1      0  0 21:00 ?        00:00:01 mysqld
-	root        207      0  0 21:39 ?        00:00:00 ps -ef
-	```
+
+ You should see the MySQL demon (`mysqld`) is running. Note that the PID shown here is the PID for this process on your docker host. To see the same `mysqld` process running as the main process of the container (PID 1) try:
+ 
+ ```
+ $ docker container exec mydb ps -ef
+ UID         PID   PPID  C STIME TTY          TIME CMD
+ mysql         1      0  0 21:00 ?        00:00:01 mysqld
+ root        207      0  0 21:39 ?        00:00:00 ps -ef
+ ```
 
     Although MySQL is running, it is isolated within the container because no network ports have been published to the host. Network traffic cannot reach containers from the host unless ports are explicitly published.
 
@@ -263,7 +261,7 @@ Let's have a look at the  Dockerfile we'll be using, which builds a simple websi
 1. Make sure you're in the `linux_tweet_app` directory:
 
     ```
-    $ cd ~/containers-101/linux_tweet_app
+    cd ~/containers-101/linux_tweet_app
     ```
 
 2. Display the contents of our Dockerfile.
@@ -283,15 +281,15 @@ Let's have a look at the  Dockerfile we'll be using, which builds a simple websi
 
     Let's see what each of these lines in the Dockerfile do.
 
-    - [FROM](https://docs.docker.com/engine/reference/builder/#from) specifies the base image to use as the starting point for this new image you're creating. For this example we're starting from `nginx:latest`.
-    - [COPY](https://docs.docker.com/engine/reference/builder/#copy) copies files from the host into the image, at a known location. In our case it copies `index.html` and a graphic that will be used on our webpage.
-    - [EXPOSE](https://docs.docker.com/engine/reference/builder/#expose) documents which ports the application uses.
-    - [CMD](https://docs.docker.com/engine/reference/builder/#cmd) specifies what command to run when a container is started from the image. Notice that we can specify the command, as well as run-time arguments.
+    * [FROM](https://docs.docker.com/engine/reference/builder/#from) specifies the base image to use as the starting point for this new image you're creating. For this example we're starting from `nginx:latest`.
+    * [COPY](https://docs.docker.com/engine/reference/builder/#copy) copies files from the host into the image, at a known location. In our case it copies `index.html` and a graphic that will be used on our webpage.
+    * [EXPOSE](https://docs.docker.com/engine/reference/builder/#expose) documents which ports the application uses.
+    * [CMD](https://docs.docker.com/engine/reference/builder/#cmd) specifies what command to run when a container is started from the image. Notice that we can specify the command, as well as run-time arguments.
 
 3. In order to make commands more copy/paste friendly, export an environment variable containing your DockerID (if you don't have a DockerID you can get one for free via [Docker Cloud](https://cloud.docker.com))
 
     ```
-    $ export DOCKERID=<your docker id>
+    export DOCKERID=<your docker id>
     ```
 
 4. To make sure it stored correctly by echoing it back in the terminal
@@ -368,7 +366,6 @@ Let's have a look at the  Dockerfile we'll be using, which builds a simple websi
     >
     > In a production environment you may want to use `docker container stop` to gracefully stop the container and leave it on the host. You can then use `docker container rm` to permanently remove it.
 
-
 ## <a name="Task_3"></a>Task 3: Modify a running website
 
 When you're actively working on an application it is inconvenient to have to stop the container, rebuild the image, and run a new version every time you make a change to your source code.
@@ -409,7 +406,7 @@ Because we did a bind mount, any changes made to the local filesystem are immedi
     The Git repo that you pulled earlier contains several different versions of an index.html file. Run an `ls` command from within the `~/containers-101/linux_tweet_app` directory to see a list of them. In this step we'll replace `index.html` with `index-new.html`.
 
     ```
-    $ cp index-new.html index.html
+    cp index-new.html index.html
     ```
 
 4. Refresh the web page. The site will have changed.
@@ -440,7 +437,7 @@ Because we did a bind mount, any changes made to the local filesystem are immedi
 
 7. Click the `80` in the Play With Docker interface to view the website. Notice it's back to the original version with the blue background.
 
-8.  Stop and remove the current container
+8. Stop and remove the current container
 
     ```
     $ docker rm --force linux_tweet_app
@@ -459,7 +456,7 @@ To save the changes you made to the `index.html` file earlier, you need to build
     Be sure to include the period (`.`) at the end of the command.
 
     ```
-    $ docker image build --tag $DOCKERID/linux_tweet_app:2.0 .
+    docker image build --tag $DOCKERID/linux_tweet_app:2.0 .
     ```
 
     > Notice how fast that built! This is because Docker only modified the portion of the image that changed vs. rebuilding the whole image.
@@ -573,6 +570,5 @@ Distribution is built into the Docker platform. You can build images locally and
     ```
 
     Notice that several lines of the output say `Layer already exists`. This is because Docker will leverage read-only layers that are the same as any previously uploaded image layers.
-
 
     You can browse to `https://hub.docker.com/r/<your docker id>/` and see your newly-pushed Docker images. These are public repositories, so anyone can pull the images - you don't even need a Docker ID to pull public images.
