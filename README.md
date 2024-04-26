@@ -1,6 +1,11 @@
 # Docker 101 Workshop
 
-An workshop that introduces Linux containers through concepts in [slides](https://calcotestudios.com/talks/decks/slides-developerweek-austin-2018-linux-containers-101) and hands-on labs.
+An workshop that introduces Docker containers through concepts in [slides](https://calcotestudios.com/talks/decks/slides-developerweek-austin-2018-linux-containers-101) and hands-on labs.
+
+This workshop focuses on Linux containers, however, many of the concepts are directly applicable to Windows containers as well. The workshop is Docker Desktop compatible and most, if not all, of the concepts are directly applicable on either operating system.
+
+The sample application "awesomeapp" runs on port 8000 by default (on localhost).
+
 
 ## Join the Community!
 
